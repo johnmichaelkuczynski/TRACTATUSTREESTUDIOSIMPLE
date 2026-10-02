@@ -1,0 +1,1 @@
+- [Variation fidelity](variation-fidelity.md) — replace every illustrative example and analogy; preserve non-example wording verbatim and never change qualifiers.
