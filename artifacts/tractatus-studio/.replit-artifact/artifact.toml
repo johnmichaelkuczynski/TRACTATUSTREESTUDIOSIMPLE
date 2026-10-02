@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Tractatus Tree Studio"
+description = "Generate structured Tractatus trees from books and papers, create example-rich variations, and convert them into exhaustive prose while streaming AI detection feedback across every text panel."
+version = "1.0.0"
+id = "artifacts/tractatus-studio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18120
+
+[services.development]
+run = "pnpm --filter @workspace/tractatus-studio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tractatus-studio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/tractatus-studio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18120"
+BASE_PATH = "/"
