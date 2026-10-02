@@ -11,6 +11,42 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /tractatus/generate:
+    post:
+      operationId: generateTractatus
+      tags: [tractatus]
+      summary: Stream a tree, variation, or prose conversion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerationInput"
+      responses:
+        "200":
+          description: SSE JSON events containing content, status, done, or error
+          content:
+            text/event-stream:
+              schema:
+                type: string
+  /tractatus/detect:
+    post:
+      operationId: detectText
+      tags: [tractatus]
+      summary: Analyze text using GPTZero
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DetectionInput"
+      responses:
+        "200":
+          description: Real GPTZero analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionResult"
   /healthz:
     get:
       operationId: healthCheck
@@ -26,6 +62,39 @@ paths:
                 $ref: "#/components/schemas/HealthStatus"
 components:
   schemas:
+    GenerationInput:
+      type: object
+      required: [stage, text]
+      properties:
+        stage:
+          type: string
+          enum: [tree, variation, prose]
+        text:
+          type: string
+          minLength: 1
+          maxLength: 1000000
+    DetectionInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 1000000
+    DetectionResult:
+      type: object
+      required: [aiProbability, classification, message, analyzedCharacters, totalCharacters]
+      properties:
+        aiProbability:
+          type: number
+        classification:
+          type: string
+        message:
+          type: string
+        analyzedCharacters:
+          type: integer
+        totalCharacters:
+          type: integer
     HealthStatus:
       type: object
       properties:

@@ -1,45 +1,35 @@
-# [Project name]
+# Tractatus Tree Studio
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Transform books and papers into exhaustive numbered trees, fresh-example variations, and connected prose.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- API: `pnpm --filter @workspace/api-server run dev`
+- Web: `pnpm --filter @workspace/tractatus-studio run dev`
+- Full check: `pnpm run typecheck`
+- API contracts: `lib/api-spec/openapi.yaml`; regenerate with `pnpm --filter @workspace/api-spec run codegen`.
+- Managed workflows supply ports and base paths. Restart the API after server edits.
 
-## Stack
+## Product requirements
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Four editable boxes: source, original tree, fresh-example variation, and prose of the variation.
+- Every box has immediate Copy and Delete, with no confirmation.
+- Whole-page Clear reloads the page.
+- OpenAI generation streams; Stop retains partial text.
+- Automatic GPTZero checks run after editing or generation, not during streaming.
+- Do not add login, payment, or unrelated features without an explicit request.
 
-## Where things live
+## Integration decisions
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- OpenAI uses Replit AI Integrations and its supplied SDK client. Usage is billed to Replit credits.
+- GPTZero uses its official text API and the GPTZERO_API_KEY secret, never browser-visible.
+- Detection is advisory, not proof of authorship.
+- Long texts are processed in sections rather than silently truncated. Multi-section detector scores are explicitly described as weighted estimates.
+- No server-side document persistence is currently requested. TXT and Markdown uploads are read in the browser.
 
-## Architecture decisions
+## Source map
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
-
-## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
-
-## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Frontend: `artifacts/tractatus-studio/src/pages/home.tsx`, `components/text-panel.tsx`, `hooks/use-detector.ts`.
+- Backend routes: `artifacts/api-server/src/routes/tractatus.ts`.
+- Transformations and GPTZero adapter: `artifacts/api-server/src/lib/tractatus.ts`.
+- The provided paper and reference tree remain under `.local/conversation-workspace/files/attached_assets/`.
